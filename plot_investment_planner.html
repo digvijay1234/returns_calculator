@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plot Investment Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F5F0E8;
+    --surface: #FDFAF4;
+    --surface2: #EDE8DC;
+    --ink: #1A1208;
+    --ink2: #5C4F38;
+    --ink3: #9B8E78;
+    --gold: #C4922A;
+    --gold-light: #F0D080;
+    --green: #2D6A4F;
+    --green-light: #D8F3DC;
+    --red: #9B2335;
+    --accent: #C4922A;
+    --border: rgba(90,70,40,0.15);
+    --radius: 12px;
+  }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.6;
+  }
+
+  header {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 2rem 3rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .header-title { display: flex; flex-direction: column; gap: 4px; }
+  .header-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-light); opacity: 0.8; }
+  h1 { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 400; line-height: 1.1; color: var(--bg); }
+  h1 em { font-style: italic; color: var(--gold-light); }
+
+  .header-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 6px 12px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 100px;
+    color: rgba(255,255,255,0.6);
+    white-space: nowrap;
+  }
+
+  .main { display: grid; grid-template-columns: 360px 1fr; gap: 0; min-height: calc(100vh - 100px); }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 2rem 1.5rem;
+    overflow-y: auto;
+  }
+
+  .sidebar-section { margin-bottom: 1.75rem; }
+  .sidebar-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 1rem;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .field { margin-bottom: 1.1rem; }
+  .field label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink2);
+    margin-bottom: 6px;
+  }
+  .field label .val {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gold);
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 3px solid var(--gold);
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+  input[type=range]::-moz-range-thumb {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 3px solid var(--gold);
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 2px;
+  }
+
+  /* CONTENT */
+  .content { padding: 2rem; overflow-y: auto; }
+
+  /* KPI row */
+  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 2rem; }
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s;
+  }
+  .kpi:hover { transform: translateY(-2px); }
+  .kpi.accent { background: var(--ink); border-color: var(--ink); }
+  .kpi.accent .kpi-label { color: rgba(255,255,255,0.5); }
+  .kpi.accent .kpi-value { color: var(--gold-light); }
+  .kpi.green-kpi { background: var(--green-light); border-color: rgba(45,106,79,0.2); }
+  .kpi.green-kpi .kpi-label { color: var(--green); }
+  .kpi.green-kpi .kpi-value { color: var(--green); }
+  .kpi-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px; }
+  .kpi-value { font-family: 'DM Serif Display', serif; font-size: 1.5rem; line-height: 1.2; color: var(--ink); }
+  .kpi-sub { font-size: 11px; color: var(--ink3); margin-top: 4px; font-family: 'DM Mono', monospace; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 2px; margin-bottom: 1.5rem; background: var(--surface2); padding: 3px; border-radius: 8px; width: fit-content; }
+  .tab {
+    padding: 6px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    color: var(--ink3);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+  /* Chart area */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .chart-container { position: relative; width: 100%; height: 320px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.5rem; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    padding: 8px 10px;
+    text-align: right;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+  thead th:first-child { text-align: left; }
+  tbody td {
+    padding: 9px 10px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--ink2);
+  }
+  tbody td:first-child { text-align: left; font-family: 'Syne', sans-serif; font-weight: 600; color: var(--ink); }
+  tbody tr.best-row { background: linear-gradient(90deg, rgba(196,146,42,0.08), transparent); }
+  tbody tr.best-row td { color: var(--ink); }
+  tbody tr.best-row td:first-child { color: var(--gold); }
+  .best-badge { display: inline-block; font-size: 9px; font-family: 'DM Mono', monospace; padding: 2px 7px; background: var(--gold); color: white; border-radius: 100px; margin-left: 6px; vertical-align: middle; letter-spacing: 0.05em; }
+  .neg { color: var(--red) !important; }
+  .pos { color: var(--green) !important; }
+  tbody tr.faded { opacity: 0.35; }
+
+  /* Year table */
+  .year-table-wrap { overflow-x: auto; max-height: 420px; overflow-y: auto; }
+  .year-table-wrap table thead th { position: sticky; top: 0; background: var(--bg); z-index: 2; }
+  .year-table-wrap tbody tr.exit-row { background: rgba(196,146,42,0.1); }
+  .year-table-wrap tbody tr.exit-row td { font-weight: 600; }
+
+  /* Insight box */
+  .insight {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink2);
+  }
+  .insight strong { color: var(--ink); font-weight: 700; }
+
+  footer {
+    background: var(--ink);
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+    padding: 1rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; }
+    header { padding: 1.5rem; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .kpi-grid { grid-template-columns: 1fr; }
+    .content { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-title">
+    <span class="header-eyebrow">Financial Planning Tool</span>
+    <h1>Plot <em>Investment</em><br>Planner</h1>
+  </div>
+  <span class="header-badge">India · ₹ INR</span>
+</header>
+
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Your Financial Capacity</div>
+      <div class="field">
+        <label>Monthly Capacity <span class="val" id="v-capacity">₹80,000</span></label>
+        <input type="range" id="capacity" min="20000" max="500000" step="5000" value="80000">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Loan Details</div>
+      <div class="field">
+        <label>Loan Amount <span class="val" id="v-loan">₹30,00,000</span></label>
+        <input type="range" id="loan" min="500000" max="20000000" step="100000" value="3000000">
+      </div>
+      <div class="field">
+        <label>Annual Interest Rate <span class="val" id="v-roi">8.50%</span></label>
+        <input type="range" id="roi" min="6" max="15" step="0.25" value="8.5">
+      </div>
+      <div class="field">
+        <label>Loan Tenure <span class="val" id="v-tenure">20 yrs</span></label>
+        <input type="range" id="tenure" min="5" max="30" step="1" value="20">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Plot Sale</div>
+      <div class="field">
+        <label>Sale Amount <span class="val" id="v-sale">₹70,00,000</span></label>
+        <input type="range" id="sale" min="500000" max="50000000" step="500000" value="7000000">
+      </div>
+      <div class="field">
+        <label>Exit Year <span class="val" id="v-exit">Year 10</span></label>
+        <input type="range" id="exit" min="1" max="30" step="1" value="10">
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">SIP Investment</div>
+      <div class="field">
+        <label>Expected SIP Returns <span class="val" id="v-sipret">10.00%</span></label>
+        <input type="range" id="sipret" min="6" max="20" step="0.5" value="10">
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- KPI Row -->
+    <div class="kpi-grid">
+      <div class="kpi accent">
+        <div class="kpi-label">Monthly EMI</div>
+        <div class="kpi-value" id="k-emi">—</div>
+        <div class="kpi-sub" id="k-sipamt">SIP: — / mo</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">SIP Value at Exit</div>
+        <div class="kpi-value" id="k-sipval">—</div>
+        <div class="kpi-sub" id="k-sipinv">Invested: —</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Outstanding Loan</div>
+        <div class="kpi-value" id="k-outstanding">—</div>
+        <div class="kpi-sub" id="k-outstanding-sub">at exit year</div>
+      </div>
+      <div class="kpi green-kpi">
+        <div class="kpi-label">Net Plot Profit</div>
+        <div class="kpi-value" id="k-profit">—</div>
+        <div class="kpi-sub">Sale − Outstanding Loan</div>
+      </div>
+      <div class="kpi green-kpi">
+        <div class="kpi-label">Total Wealth at Exit</div>
+        <div class="kpi-value" id="k-wealth">—</div>
+        <div class="kpi-sub">Plot Profit + SIP</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Effective Annual Yield</div>
+        <div class="kpi-value" id="k-yield">—</div>
+        <div class="kpi-sub">on total investment</div>
+      </div>
+    </div>
+
+    <div id="insight-box" class="insight"></div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('tenure')">Tenure Analysis</button>
+      <button class="tab" onclick="switchTab('growth')">Wealth Growth</button>
+      <button class="tab" onclick="switchTab('schedule')">Year-by-Year</button>
+    </div>
+
+    <!-- Tenure Tab -->
+    <div class="panel active" id="tab-tenure">
+      <div class="chart-container">
+        <canvas id="chart-tenure"></canvas>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tenure</th>
+              <th>EMI / mo</th>
+              <th>SIP / mo</th>
+              <th>SIP at Exit</th>
+              <th>Outstanding</th>
+              <th>Plot Profit</th>
+              <th>Total Wealth</th>
+              <th>Yield %</th>
+            </tr>
+          </thead>
+          <tbody id="tenure-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Growth Tab -->
+    <div class="panel" id="tab-growth">
+      <div class="chart-container" style="height:380px;">
+        <canvas id="chart-growth"></canvas>
+      </div>
+    </div>
+
+    <!-- Schedule Tab -->
+    <div class="panel" id="tab-schedule">
+      <div class="year-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Annual EMI</th>
+              <th>Principal Paid</th>
+              <th>Interest Paid</th>
+              <th>Outstanding Loan</th>
+              <th>SIP Invested</th>
+              <th>SIP Value</th>
+              <th>Net Wealth</th>
+            </tr>
+          </thead>
+          <tbody id="schedule-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>Plot Investment Planner · All calculations are indicative only. Consult a financial advisor before investing.</footer>
+
+<script>
+const inrFmt = n => {
+  const abs = Math.abs(Math.round(n));
+  const s = abs.toLocaleString('en-IN');
+  return (n < 0 ? '−₹' : '₹') + s;
+};
+const inrL = n => {
+  const abs = Math.abs(n);
+  if (abs >= 10000000) return (n < 0 ? '−' : '') + '₹' + (abs/10000000).toFixed(2) + 'Cr';
+  if (abs >= 100000) return (n < 0 ? '−' : '') + '₹' + (abs/100000).toFixed(1) + 'L';
+  return inrFmt(n);
+};
+const pct = n => (n * 100).toFixed(2) + '%';
+
+function calcEMI(P, r, n) {
+  const mr = r / 12, mn = n * 12;
+  if (mr === 0) return P / mn;
+  return P * mr * Math.pow(1+mr, mn) / (Math.pow(1+mr, mn) - 1);
+}
+function outstanding(P, r, tenureYrs, atYrs) {
+  const mr = r / 12, mn = tenureYrs * 12, mp = Math.min(atYrs * 12, mn);
+  if (mr === 0) return Math.max(0, P - (P/mn)*mp);
+  return Math.max(0, P * (Math.pow(1+mr,mn) - Math.pow(1+mr,mp)) / (Math.pow(1+mr,mn) - 1));
+}
+function sipFV(monthly, r, years) {
+  const mr = r / 12, n = years * 12;
+  if (mr === 0) return monthly * n;
+  return monthly * (Math.pow(1+mr,n)-1)/mr*(1+mr);
+}
+
+let chartTenure = null, chartGrowth = null;
+const tenures = [5,7,10,12,15,20,25,30];
+
+function getInputs() {
+  return {
+    capacity: +document.getElementById('capacity').value,
+    loan: +document.getElementById('loan').value,
+    roi: +document.getElementById('roi').value / 100,
+    tenure: +document.getElementById('tenure').value,
+    sale: +document.getElementById('sale').value,
+    exit: +document.getElementById('exit').value,
+    sipret: +document.getElementById('sipret').value / 100,
+  };
+}
+
+function update() {
+  const I = getInputs();
+
+  // Update labels
+  document.getElementById('v-capacity').textContent = inrFmt(I.capacity);
+  document.getElementById('v-loan').textContent = inrFmt(I.loan);
+  document.getElementById('v-roi').textContent = (I.roi*100).toFixed(2)+'%';
+  document.getElementById('v-tenure').textContent = I.tenure+' yrs';
+  document.getElementById('v-sale').textContent = inrFmt(I.sale);
+  document.getElementById('v-exit').textContent = 'Year '+I.exit;
+  document.getElementById('v-sipret').textContent = (I.sipret*100).toFixed(2)+'%';
+
+  // KPIs
+  const emi = calcEMI(I.loan, I.roi, I.tenure);
+  const sipAmt = Math.max(0, I.capacity - emi);
+  const sipVal = sipFV(sipAmt, I.sipret, I.exit);
+  const sipInv = sipAmt * 12 * I.exit;
+  const outLoan = outstanding(I.loan, I.roi, I.tenure, I.exit);
+  const netProfit = I.sale - outLoan;
+  const totalWealth = netProfit + sipVal;
+  const yieldVal = totalWealth > 0 ? Math.pow(Math.max(totalWealth/I.loan, 0.0001), 1/I.exit) - 1 : 0;
+
+  document.getElementById('k-emi').textContent = inrL(emi);
+  document.getElementById('k-sipamt').textContent = 'SIP: '+inrL(sipAmt)+'/mo';
+  document.getElementById('k-sipval').textContent = inrL(sipVal);
+  document.getElementById('k-sipinv').textContent = 'Invested: '+inrL(sipInv);
+  document.getElementById('k-outstanding').textContent = inrL(outLoan);
+  document.getElementById('k-profit').textContent = inrL(netProfit);
+  document.getElementById('k-profit').className = 'kpi-value ' + (netProfit >= 0 ? 'pos' : 'neg');
+  document.getElementById('k-wealth').textContent = inrL(totalWealth);
+  document.getElementById('k-yield').textContent = pct(yieldVal);
+
+  // Insight
+  const insightEl = document.getElementById('insight-box');
+  if (emi > I.capacity) {
+    insightEl.innerHTML = `<strong>⚠ EMI exceeds capacity.</strong> Your monthly EMI of ${inrL(emi)} is higher than your capacity of ${inrL(I.capacity)}. Try reducing the loan amount or increasing tenure.`;
+  } else if (netProfit < 0) {
+    insightEl.innerHTML = `<strong>Plot sale won't cover the loan.</strong> At exit year ${I.exit}, you still owe ${inrL(outLoan)} but selling for ${inrL(I.sale)}. Your SIP of ${inrL(sipVal)} partially offsets this, giving total wealth of ${inrL(totalWealth)}.`;
+  } else {
+    const sipContrib = Math.round(sipVal/totalWealth*100);
+    insightEl.innerHTML = `<strong>Looking good.</strong> At exit year ${I.exit}, your plot profit is ${inrL(netProfit)} and SIP has grown to ${inrL(sipVal)} — contributing <strong>${sipContrib}%</strong> of your total wealth. Effective annual yield on investment: <strong>${pct(yieldVal)}</strong>.`;
+  }
+
+  buildTenureTable(I);
+  buildTenureChart(I);
+  buildGrowthChart(I);
+  buildScheduleTable(I);
+}
+
+function buildTenureTable(I) {
+  const rows = tenures.map(t => {
+    const emi = calcEMI(I.loan, I.roi, t);
+    const sipAmt = Math.max(0, I.capacity - emi);
+    const sipVal = sipFV(sipAmt, I.sipret, I.exit);
+    const out = outstanding(I.loan, I.roi, t, I.exit);
+    const profit = I.sale - out;
+    const wealth = profit + sipVal;
+    const yld = wealth > 0 ? Math.pow(Math.max(wealth/I.loan,0.0001),1/I.exit)-1 : 0;
+    return { t, emi, sipAmt, sipVal, out, profit, wealth, yld, feasible: emi <= I.capacity };
+  });
+
+  const feasible = rows.filter(r => r.feasible);
+  const bestWealth = feasible.length ? Math.max(...feasible.map(r => r.wealth)) : -Infinity;
+  const best = rows.find(r => r.feasible && r.wealth === bestWealth);
+
+  const tbody = document.getElementById('tenure-table');
+  tbody.innerHTML = '';
+  rows.forEach(r => {
+    const isBest = best && r.t === best.t;
+    const isCurrent = r.t === I.tenure;
+    const tr = document.createElement('tr');
+    if (isBest) tr.className = 'best-row';
+    if (!r.feasible) tr.className = 'faded';
+    tr.innerHTML = `
+      <td>${r.t} yr${isBest ? '<span class="best-badge">BEST</span>' : ''}${isCurrent && !isBest ? ' ●' : ''}</td>
+      <td>${inrL(r.emi)}</td>
+      <td>${r.feasible ? inrL(r.sipAmt) : '—'}</td>
+      <td>${r.feasible ? inrL(r.sipVal) : '—'}</td>
+      <td>${inrL(r.out)}</td>
+      <td class="${r.profit>=0?'pos':'neg'}">${inrL(r.profit)}</td>
+      <td style="font-weight:600">${r.feasible ? inrL(r.wealth) : '—'}</td>
+      <td>${r.feasible ? pct(r.yld) : '—'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function buildTenureChart(I) {
+  const rows = tenures.map(t => {
+    const emi = calcEMI(I.loan, I.roi, t);
+    const sipAmt = Math.max(0, I.capacity - emi);
+    const sipVal = sipFV(sipAmt, I.sipret, I.exit);
+    const out = outstanding(I.loan, I.roi, t, I.exit);
+    const profit = I.sale - out;
+    const wealth = profit + sipVal;
+    return { t, profit, sipVal, wealth, feasible: emi <= I.capacity };
+  });
+
+  const labels = rows.map(r => r.t+'yr');
+  const profits = rows.map(r => r.feasible ? Math.round(r.profit/100000) : null);
+  const sipVals = rows.map(r => r.feasible ? Math.round(r.sipVal/100000) : null);
+  const wealths = rows.map(r => r.feasible ? Math.round(r.wealth/100000) : null);
+
+  if (chartTenure) chartTenure.destroy();
+  chartTenure = new Chart(document.getElementById('chart-tenure'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Net Plot Profit', data: profits, backgroundColor: '#378ADD', borderRadius: 4 },
+        { label: 'SIP Value', data: sipVals, backgroundColor: '#5DCAA5', borderRadius: 4 },
+        { label: 'Total Wealth', data: wealths, type: 'line', borderColor: '#C4922A', backgroundColor: 'transparent', pointBackgroundColor: '#C4922A', pointRadius: 5, tension: 0.4 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ' ₹' + ctx.raw + 'L' } }
+      },
+      scales: {
+        x: { ticks: { autoSkip: false, color: '#5C4F38', font: { family: 'DM Mono', size: 11 } }, grid: { display: false } },
+        y: { ticks: { callback: v => '₹'+v+'L', color: '#9B8E78', font: { family: 'DM Mono', size: 10 } }, grid: { color: 'rgba(90,70,40,0.08)' } }
+      }
+    }
+  });
+}
+
+function buildGrowthChart(I) {
+  const emi = calcEMI(I.loan, I.roi, I.tenure);
+  const sipAmt = Math.max(0, I.capacity - emi);
+  const years = Array.from({length: 30}, (_,i) => i+1);
+  const sipSeries = years.map(y => Math.round(sipFV(sipAmt, I.sipret, y)/100000));
+  const outSeries = years.map(y => Math.round(outstanding(I.loan, I.roi, I.tenure, y)/100000));
+  const wealthSeries = years.map(y => {
+    const sip = sipFV(sipAmt, I.sipret, y);
+    const out = outstanding(I.loan, I.roi, I.tenure, y);
+    return Math.round((I.sale - out + sip)/100000);
+  });
+
+  if (chartGrowth) chartGrowth.destroy();
+  chartGrowth = new Chart(document.getElementById('chart-growth'), {
+    type: 'line',
+    data: {
+      labels: years.map(y => 'Yr '+y),
+      datasets: [
+        { label: 'SIP Value', data: sipSeries, borderColor: '#5DCAA5', backgroundColor: 'rgba(93,202,165,0.1)', fill: true, tension: 0.4, pointRadius: 2 },
+        { label: 'Outstanding Loan', data: outSeries, borderColor: '#9B2335', backgroundColor: 'rgba(155,35,53,0.05)', fill: true, tension: 0.2, pointRadius: 2 },
+        { label: 'Total Wealth (incl. plot sale)', data: wealthSeries, borderColor: '#C4922A', backgroundColor: 'transparent', tension: 0.4, pointRadius: 2, borderWidth: 2.5 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { usePointStyle: true, font: { family: 'DM Mono', size: 11 }, color: '#5C4F38', padding: 16 } },
+        tooltip: { callbacks: { label: ctx => ' '+ctx.dataset.label+': ₹'+ctx.raw+'L' } },
+        annotation: {}
+      },
+      scales: {
+        x: { ticks: { autoSkip: true, maxTicksLimit: 10, color: '#9B8E78', font: { family: 'DM Mono', size: 10 } }, grid: { display: false } },
+        y: { ticks: { callback: v => '₹'+v+'L', color: '#9B8E78', font: { family: 'DM Mono', size: 10 } }, grid: { color: 'rgba(90,70,40,0.08)' } }
+      }
+    }
+  });
+}
+
+function buildScheduleTable(I) {
+  const emi = calcEMI(I.loan, I.roi, I.tenure);
+  const sipAmt = Math.max(0, I.capacity - emi);
+  const tbody = document.getElementById('schedule-table');
+  tbody.innerHTML = '';
+
+  for (let yr = 1; yr <= 30; yr++) {
+    const prevOut = yr === 1 ? I.loan : outstanding(I.loan, I.roi, I.tenure, yr-1);
+    const curOut = outstanding(I.loan, I.roi, I.tenure, yr);
+    const annualEmi = emi * 12;
+    const principal = prevOut - curOut;
+    const interest = annualEmi - principal;
+    const sipInv = sipAmt * 12 * yr;
+    const sipValue = sipFV(sipAmt, I.sipret, yr);
+    const netWealth = sipValue - curOut;
+
+    const tr = document.createElement('tr');
+    if (yr === I.exit) tr.className = 'exit-row';
+    tr.innerHTML = `
+      <td>${yr}${yr === I.exit ? ' ★' : ''}</td>
+      <td>${inrL(annualEmi)}</td>
+      <td>${inrL(Math.max(0,principal))}</td>
+      <td>${inrL(Math.max(0,interest))}</td>
+      <td>${curOut > 0 ? inrL(curOut) : '—'}</td>
+      <td>${inrL(sipInv)}</td>
+      <td>${inrL(sipValue)}</td>
+      <td class="${netWealth>=0?'pos':'neg'}">${inrL(netWealth)}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  event.target.classList.add('active');
+  if (tab === 'growth') {
+    setTimeout(() => { if (chartGrowth) chartGrowth.resize(); }, 50);
+  }
+}
+
+document.querySelectorAll('input[type=range]').forEach(el => el.addEventListener('input', update));
+update();
+</script>
+</body>
+</html>
