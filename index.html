@@ -53,6 +53,12 @@
     align-items: flex-end;
     justify-content: space-between;
     gap: 1rem;
+    /* position: fixed; */
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 200;
   }
 
   .header-title { display: flex; flex-direction: column; gap: 4px; }
@@ -71,7 +77,13 @@
     white-space: nowrap;
   }
 
-  .main { display: grid; grid-template-columns: 360px 1fr; gap: 0; min-height: calc(100vh - 100px); }
+  .main { 
+    display: grid; 
+    grid-template-columns: 360px 1fr; 
+    gap: 0; 
+    min-height: calc(100vh - 100px); 
+    /* margin-top: 100px;  */
+  }
 
   /* SIDEBAR */
   .sidebar {
@@ -251,6 +263,18 @@
 
   @media (max-width: 900px) {
     .main { grid-template-columns: 1fr; }
+    .sidebar {
+      position: static;
+      width: auto;
+      height: auto;
+      top: auto;
+      left: auto;
+      z-index: auto;
+      overflow-y: auto;
+    }
+    .content {
+      margin-left: 0;
+    }
     header { padding: 1.5rem; }
     .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   }
@@ -295,7 +319,10 @@
       </div>
       <div class="field">
         <label>Loan Tenure <span class="val" id="v-tenure">20 yrs</span></label>
-        <input type="range" id="tenure" min="5" max="30" step="1" value="20">
+        <input type="range" id="tenure" min="5" max="50" step="1" value="20">
+      </div>
+      <div class="field">
+        <label>Estimated Monthly EMI <span class="val" id="v-emi-field">—</span></label>
       </div>
     </div>
 
@@ -313,6 +340,9 @@
 
     <div class="sidebar-section">
       <div class="sidebar-section-title">SIP Investment</div>
+      <div class="field">
+        <label>Monthly SIP Amount <span class="val" id="v-sip-monthly">—</span></label>
+      </div>
       <div class="field">
         <label>Expected SIP Returns <span class="val" id="v-sipret">10.00%</span></label>
         <input type="range" id="sipret" min="6" max="20" step="0.5" value="10">
@@ -483,7 +513,9 @@ function update() {
 
   // KPIs
   const emi = calcEMI(I.loan, I.roi, I.tenure);
+  document.getElementById('v-emi-field').textContent = inrL(emi);
   const sipAmt = Math.max(0, I.capacity - emi);
+  document.getElementById('v-sip-monthly').textContent = inrL(sipAmt);
   const sipVal = sipFV(sipAmt, I.sipret, I.exit);
   const sipInv = sipAmt * 12 * I.exit;
   const outLoan = outstanding(I.loan, I.roi, I.tenure, I.exit);
