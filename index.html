@@ -21,20 +21,16 @@
     --green: #2D6A4F;
     --green-light: #D8F3DC;
     --red: #9B2335;
-    --accent: #C4922A;
+    --red-light: #FDECEA;
+    --blue: #185FA5;
+    --blue-light: #E6F1FB;
     --border: rgba(90,70,40,0.15);
     --radius: 12px;
   }
 
-  body {
-    font-family: 'Syne', sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    min-height: 100vh;
-    padding: 0;
-  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
 
-  /* Grain overlay */
   body::before {
     content: '';
     position: fixed;
@@ -53,120 +49,37 @@
     align-items: flex-end;
     justify-content: space-between;
     gap: 1rem;
-    /* position: fixed; */
-    top: 0;
-    left: 0;
-    right: 0;
     width: 100%;
     z-index: 200;
   }
-
   .header-title { display: flex; flex-direction: column; gap: 4px; }
   .header-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-light); opacity: 0.8; }
   h1 { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 400; line-height: 1.1; color: var(--bg); }
   h1 em { font-style: italic; color: var(--gold-light); }
+  .header-badge { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 100px; color: rgba(255,255,255,0.6); white-space: nowrap; }
 
-  .header-badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    padding: 6px 12px;
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 100px;
-    color: rgba(255,255,255,0.6);
-    white-space: nowrap;
-  }
+  .main { display: grid; grid-template-columns: 360px 1fr; gap: 0; min-height: calc(100vh - 100px); }
 
-  .main { 
-    display: grid; 
-    grid-template-columns: 360px 1fr; 
-    gap: 0; 
-    min-height: calc(100vh - 100px); 
-    /* margin-top: 100px;  */
-  }
-
-  /* SIDEBAR */
-  .sidebar {
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    padding: 2rem 1.5rem;
-    overflow-y: auto;
-  }
-
+  .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 2rem 1.5rem; overflow-y: auto; }
   .sidebar-section { margin-bottom: 1.75rem; }
-  .sidebar-section-title {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--ink3);
-    margin-bottom: 1rem;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border);
-  }
+  .sidebar-section-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink3); margin-bottom: 1rem; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 
   .field { margin-bottom: 1.1rem; }
-  .field label {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ink2);
-    margin-bottom: 6px;
-  }
-  .field label .val {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--gold);
-  }
+  .field label { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; font-weight: 600; color: var(--ink2); margin-bottom: 6px; }
+  .field label .val { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--gold); }
+  #v-property { font-size: 16px !important; font-weight: 700 !important; }
+  .field-static { font-size: 12px; color: var(--ink3); font-family: 'DM Mono', monospace; margin-top: 2px; }
 
-  input[type=range] {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 4px;
-    background: var(--surface2);
-    border-radius: 2px;
-    outline: none;
-    cursor: pointer;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px; height: 18px;
-    border-radius: 50%;
-    background: var(--ink);
-    border: 3px solid var(--gold);
-    cursor: pointer;
-    transition: transform 0.15s;
-  }
+  input[type=range] { -webkit-appearance: none; width: 100%; height: 4px; background: var(--surface2); border-radius: 2px; outline: none; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--ink); border: 3px solid var(--gold); cursor: pointer; transition: transform 0.15s; }
   input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-  input[type=range]::-moz-range-thumb {
-    width: 18px; height: 18px;
-    border-radius: 50%;
-    background: var(--ink);
-    border: 3px solid var(--gold);
-    cursor: pointer;
-  }
-  input[type=range]::-webkit-slider-runnable-track {
-    height: 4px;
-    border-radius: 2px;
-  }
+  input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--ink); border: 3px solid var(--gold); cursor: pointer; }
 
-  /* CONTENT */
   .content { padding: 2rem; overflow-y: auto; }
 
-  /* KPI row */
-  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 2rem; }
-  .kpi {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.1rem 1.25rem;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s;
-  }
+  /* KPI grid */
+  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.25rem; }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.25rem; position: relative; overflow: hidden; transition: transform 0.2s; }
   .kpi:hover { transform: translateY(-2px); }
   .kpi.accent { background: var(--ink); border-color: var(--ink); }
   .kpi.accent .kpi-label { color: rgba(255,255,255,0.5); }
@@ -174,54 +87,61 @@
   .kpi.green-kpi { background: var(--green-light); border-color: rgba(45,106,79,0.2); }
   .kpi.green-kpi .kpi-label { color: var(--green); }
   .kpi.green-kpi .kpi-value { color: var(--green); }
+  .kpi.blue-kpi { background: var(--blue-light); border-color: rgba(24,95,165,0.2); }
+  .kpi.blue-kpi .kpi-label { color: var(--blue); }
+  .kpi.blue-kpi .kpi-value { color: var(--blue); }
   .kpi-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px; }
   .kpi-value { font-family: 'DM Serif Display', serif; font-size: 1.5rem; line-height: 1.2; color: var(--ink); }
   .kpi-sub { font-size: 11px; color: var(--ink3); margin-top: 4px; font-family: 'DM Mono', monospace; }
 
-  /* Tabs */
-  .tabs { display: flex; gap: 2px; margin-bottom: 1.5rem; background: var(--surface2); padding: 3px; border-radius: 8px; width: fit-content; }
-  .tab {
-    padding: 6px 18px;
-    font-size: 13px;
-    font-weight: 600;
-    border: none;
-    background: transparent;
-    color: var(--ink3);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
+  /* Decision engine banner */
+  .decision-banner {
+    border-radius: var(--radius);
+    padding: 1.1rem 1.4rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    border: 1.5px solid transparent;
   }
+  .decision-banner.plot-wins { background: var(--green-light); border-color: rgba(45,106,79,0.25); }
+  .decision-banner.sip-wins { background: var(--blue-light); border-color: rgba(24,95,165,0.2); }
+  .decision-banner.tied { background: var(--surface2); border-color: var(--border); }
+  .decision-left { display: flex; align-items: center; gap: 12px; }
+  .decision-icon { font-size: 22px; line-height: 1; }
+  .decision-title { font-size: 15px; font-weight: 700; color: var(--ink); }
+  .decision-sub { font-size: 12px; color: var(--ink2); margin-top: 2px; font-family: 'DM Mono', monospace; }
+  .decision-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { font-family: 'DM Mono', monospace; font-size: 11px; padding: 4px 10px; border-radius: 100px; font-weight: 500; }
+  .chip.green { background: rgba(45,106,79,0.12); color: var(--green); }
+  .chip.blue { background: rgba(24,95,165,0.12); color: var(--blue); }
+  .chip.gold { background: rgba(196,146,42,0.15); color: #7A5A12; }
+
+  /* Insight */
+  .insight { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--gold); border-radius: 0 var(--radius) var(--radius) 0; padding: 1rem 1.25rem; margin-bottom: 1.5rem; font-size: 13.5px; line-height: 1.7; color: var(--ink2); }
+  .insight strong { color: var(--ink); font-weight: 700; }
+  .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .insight-pill { background: var(--surface2); border-radius: 8px; padding: 8px 12px; font-size: 12px; font-family: 'DM Mono', monospace; color: var(--ink2); }
+  .insight-pill span { display: block; font-size: 10px; color: var(--ink3); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 2px; margin-bottom: 1.5rem; background: var(--surface2); padding: 3px; border-radius: 8px; width: fit-content; flex-wrap: wrap; }
+  .tab { padding: 6px 16px; font-size: 13px; font-weight: 600; border: none; background: transparent; color: var(--ink3); border-radius: 6px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
   .tab.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
-  /* Chart area */
   .panel { display: none; }
   .panel.active { display: block; }
 
   .chart-container { position: relative; width: 100%; height: 320px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.5rem; }
 
-  /* Table */
+  /* Tables */
   .table-wrap { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead th {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink3);
-    padding: 8px 10px;
-    text-align: right;
-    border-bottom: 2px solid var(--border);
-    white-space: nowrap;
-  }
+  thead th { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); padding: 8px 10px; text-align: right; border-bottom: 2px solid var(--border); white-space: nowrap; }
   thead th:first-child { text-align: left; }
-  tbody td {
-    padding: 9px 10px;
-    text-align: right;
-    border-bottom: 1px solid var(--border);
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    color: var(--ink2);
-  }
+  tbody td { padding: 9px 10px; text-align: right; border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 12px; color: var(--ink2); }
   tbody td:first-child { text-align: left; font-family: 'Syne', sans-serif; font-weight: 600; color: var(--ink); }
   tbody tr.best-row { background: linear-gradient(90deg, rgba(196,146,42,0.08), transparent); }
   tbody tr.best-row td { color: var(--ink); }
@@ -231,56 +151,34 @@
   .pos { color: var(--green) !important; }
   tbody tr.faded { opacity: 0.35; }
 
-  /* Year table */
   .year-table-wrap { overflow-x: auto; max-height: 420px; overflow-y: auto; }
   .year-table-wrap table thead th { position: sticky; top: 0; background: var(--bg); z-index: 2; }
   .year-table-wrap tbody tr.exit-row { background: rgba(196,146,42,0.1); }
   .year-table-wrap tbody tr.exit-row td { font-weight: 600; }
 
-  /* Insight box */
-  .insight {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--gold);
-    border-radius: 0 var(--radius) var(--radius) 0;
-    padding: 1rem 1.25rem;
-    margin-bottom: 1.5rem;
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--ink2);
-  }
-  .insight strong { color: var(--ink); font-weight: 700; }
+  /* Inflation section */
+  .real-returns-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+  .rr-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
+  .rr-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px; }
+  .rr-nominal { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--ink); margin-bottom: 4px; }
+  .rr-real { font-size: 13px; font-family: 'DM Mono', monospace; color: var(--green); font-weight: 500; }
+  .rr-real.bad { color: var(--red); }
+  .rr-note { font-size: 10px; color: var(--ink3); margin-top: 3px; font-family: 'DM Mono', monospace; }
 
-  footer {
-    background: var(--ink);
-    color: rgba(255,255,255,0.3);
-    text-align: center;
-    padding: 1rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.05em;
-  }
+  .section-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px; }
+
+  footer { background: var(--ink); color: rgba(255,255,255,0.3); text-align: center; padding: 1rem; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.05em; }
 
   @media (max-width: 900px) {
     .main { grid-template-columns: 1fr; }
-    .sidebar {
-      position: static;
-      width: auto;
-      height: auto;
-      top: auto;
-      left: auto;
-      z-index: auto;
-      overflow-y: auto;
-    }
-    .content {
-      margin-left: 0;
-    }
     header { padding: 1.5rem; }
     .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .real-returns-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 600px) {
     .kpi-grid { grid-template-columns: 1fr; }
     .content { padding: 1rem; }
+    .real-returns-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -295,23 +193,27 @@
 </header>
 
 <div class="main">
-
-  <!-- SIDEBAR -->
   <aside class="sidebar">
-
     <div class="sidebar-section">
       <div class="sidebar-section-title">Your Financial Capacity</div>
       <div class="field">
         <label>Monthly Capacity <span class="val" id="v-capacity">₹80,000</span></label>
-        <input type="range" id="capacity" min="20000" max="500000" step="5000" value="80000">
+        <input type="range" id="capacity" min="20000" max="1000000" step="5000" value="80000">
       </div>
     </div>
 
     <div class="sidebar-section">
       <div class="sidebar-section-title">Loan Details</div>
       <div class="field">
+        <label>Property Cost <span class="val" id="v-property">—</span></label>
+      </div>
+      <div class="field">
+        <label>Down Payment <span class="val" id="v-down">₹5,00,000</span></label>
+        <input type="range" id="down" min="0" max="20000000" step="100000" value="500000">
+      </div>
+      <div class="field">
         <label>Loan Amount <span class="val" id="v-loan">₹30,00,000</span></label>
-        <input type="range" id="loan" min="500000" max="20000000" step="100000" value="3000000">
+        <input type="range" id="loan" min="100000" max="50000000" step="100000" value="3000000">
       </div>
       <div class="field">
         <label>Annual Interest Rate <span class="val" id="v-roi">8.50%</span></label>
@@ -322,7 +224,7 @@
         <input type="range" id="tenure" min="5" max="50" step="1" value="20">
       </div>
       <div class="field">
-        <label>Estimated Monthly EMI <span class="val" id="v-emi-field">—</span></label>
+        <label>Est. Monthly EMI <span class="val" id="v-emi-field">—</span></label>
       </div>
     </div>
 
@@ -330,18 +232,18 @@
       <div class="sidebar-section-title">Plot Sale</div>
       <div class="field">
         <label>Sale Amount <span class="val" id="v-sale">₹70,00,000</span></label>
-        <input type="range" id="sale" min="500000" max="50000000" step="500000" value="7000000">
+        <input type="range" id="sale" min="500000" max="100000000" step="500000" value="7000000">
       </div>
       <div class="field">
         <label>Exit Year <span class="val" id="v-exit">Year 10</span></label>
-        <input type="range" id="exit" min="1" max="30" step="1" value="10">
+        <input type="range" id="exit" min="1" max="50" step="1" value="10">
       </div>
     </div>
 
     <div class="sidebar-section">
       <div class="sidebar-section-title">SIP Investment</div>
       <div class="field">
-        <label>Monthly SIP Amount <span class="val" id="v-sip-monthly">—</span></label>
+        <label>Monthly SIP <span class="val" id="v-sip-monthly">—</span></label>
       </div>
       <div class="field">
         <label>Expected SIP Returns <span class="val" id="v-sipret">10.00%</span></label>
@@ -349,12 +251,18 @@
       </div>
     </div>
 
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Inflation</div>
+      <div class="field">
+        <label>Inflation Rate <span class="val" id="v-inflation">6.00%</span></label>
+        <input type="range" id="inflation" min="2" max="12" step="0.5" value="6">
+      </div>
+    </div>
   </aside>
 
-  <!-- CONTENT -->
   <main class="content">
 
-    <!-- KPI Row -->
+    <!-- KPI Row 1: Core -->
     <div class="kpi-grid">
       <div class="kpi accent">
         <div class="kpi-label">Monthly EMI</div>
@@ -369,7 +277,7 @@
       <div class="kpi">
         <div class="kpi-label">Outstanding Loan</div>
         <div class="kpi-value" id="k-outstanding">—</div>
-        <div class="kpi-sub" id="k-outstanding-sub">at exit year</div>
+        <div class="kpi-sub">at exit year</div>
       </div>
       <div class="kpi green-kpi">
         <div class="kpi-label">Net Plot Profit</div>
@@ -381,39 +289,45 @@
         <div class="kpi-value" id="k-wealth">—</div>
         <div class="kpi-sub">Plot Profit + SIP</div>
       </div>
-      <div class="kpi">
-        <div class="kpi-label">Effective Annual Yield</div>
-        <div class="kpi-value" id="k-yield">—</div>
-        <div class="kpi-sub">on total investment</div>
+      <div class="kpi blue-kpi">
+        <div class="kpi-label">Plot XIRR</div>
+        <div class="kpi-value" id="k-xirr">—</div>
+        <div class="kpi-sub" id="k-xirr-sub">annualised return on plot</div>
       </div>
     </div>
 
+    <!-- Decision Engine Banner -->
+    <div class="decision-banner" id="decision-banner">
+      <div class="decision-left">
+        <div class="decision-icon" id="dec-icon">🏡</div>
+        <div>
+          <div class="decision-title" id="dec-title">—</div>
+          <div class="decision-sub" id="dec-sub">—</div>
+        </div>
+      </div>
+      <div class="decision-chips" id="dec-chips"></div>
+    </div>
+
+    <!-- Insight -->
     <div id="insight-box" class="insight"></div>
 
     <!-- Tabs -->
     <div class="tabs">
-      <button class="tab active" onclick="switchTab('tenure')">Tenure Analysis</button>
-      <button class="tab" onclick="switchTab('growth')">Wealth Growth</button>
-      <button class="tab" onclick="switchTab('schedule')">Year-by-Year</button>
+      <button class="tab active" onclick="switchTab('tenure', this)">Tenure Analysis</button>
+      <button class="tab" onclick="switchTab('growth', this)">Wealth Growth</button>
+      <button class="tab" onclick="switchTab('real', this)">Real Returns</button>
+      <button class="tab" onclick="switchTab('schedule', this)">Year-by-Year</button>
     </div>
 
     <!-- Tenure Tab -->
     <div class="panel active" id="tab-tenure">
-      <div class="chart-container">
-        <canvas id="chart-tenure"></canvas>
-      </div>
+      <div class="chart-container"><canvas id="chart-tenure"></canvas></div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Tenure</th>
-              <th>EMI / mo</th>
-              <th>SIP / mo</th>
-              <th>SIP at Exit</th>
-              <th>Outstanding</th>
-              <th>Plot Profit</th>
-              <th>Total Wealth</th>
-              <th>Yield %</th>
+              <th>Tenure</th><th>EMI / mo</th><th>SIP / mo</th><th>SIP at Exit</th>
+              <th>Outstanding</th><th>Plot Profit</th><th>Total Wealth</th><th>XIRR</th>
             </tr>
           </thead>
           <tbody id="tenure-table"></tbody>
@@ -423,9 +337,14 @@
 
     <!-- Growth Tab -->
     <div class="panel" id="tab-growth">
-      <div class="chart-container" style="height:380px;">
-        <canvas id="chart-growth"></canvas>
-      </div>
+      <div class="chart-container" style="height:380px;"><canvas id="chart-growth"></canvas></div>
+    </div>
+
+    <!-- Real Returns Tab -->
+    <div class="panel" id="tab-real">
+      <div class="section-label" style="margin-bottom:12px;">Nominal vs Inflation-Adjusted (Real) Returns</div>
+      <div class="real-returns-grid" id="rr-grid"></div>
+      <div class="chart-container" style="height:300px;"><canvas id="chart-real"></canvas></div>
     </div>
 
     <!-- Schedule Tab -->
@@ -434,14 +353,8 @@
         <table>
           <thead>
             <tr>
-              <th>Year</th>
-              <th>Annual EMI</th>
-              <th>Principal Paid</th>
-              <th>Interest Paid</th>
-              <th>Outstanding Loan</th>
-              <th>SIP Invested</th>
-              <th>SIP Value</th>
-              <th>Net Wealth</th>
+              <th>Year</th><th>Annual EMI</th><th>Principal Paid</th><th>Interest Paid</th>
+              <th>Outstanding Loan</th><th>SIP Invested</th><th>SIP Value</th><th>Net Wealth</th>
             </tr>
           </thead>
           <tbody id="schedule-table"></tbody>
@@ -455,111 +368,287 @@
 <footer>Plot Investment Planner · All calculations are indicative only. Consult a financial advisor before investing.</footer>
 
 <script>
+// ── Formatters ──────────────────────────────────────────────────────────────
 const inrFmt = n => {
   const abs = Math.abs(Math.round(n));
-  const s = abs.toLocaleString('en-IN');
-  return (n < 0 ? '−₹' : '₹') + s;
+  return (n < 0 ? '−₹' : '₹') + abs.toLocaleString('en-IN');
 };
 const inrL = n => {
   const abs = Math.abs(n);
   if (abs >= 10000000) return (n < 0 ? '−' : '') + '₹' + (abs/10000000).toFixed(2) + 'Cr';
-  if (abs >= 100000) return (n < 0 ? '−' : '') + '₹' + (abs/100000).toFixed(1) + 'L';
+  if (abs >= 100000)   return (n < 0 ? '−' : '') + '₹' + (abs/100000).toFixed(1) + 'L';
   return inrFmt(n);
 };
 const pct = n => (n * 100).toFixed(2) + '%';
 
+// ── Finance Helpers ─────────────────────────────────────────────────────────
 function calcEMI(P, r, n) {
-  const mr = r / 12, mn = n * 12;
-  if (mr === 0) return P / mn;
-  return P * mr * Math.pow(1+mr, mn) / (Math.pow(1+mr, mn) - 1);
+  const mr = r/12, mn = n*12;
+  if (mr === 0) return P/mn;
+  return P * mr * Math.pow(1+mr,mn) / (Math.pow(1+mr,mn)-1);
 }
+
 function outstanding(P, r, tenureYrs, atYrs) {
-  const mr = r / 12, mn = tenureYrs * 12, mp = Math.min(atYrs * 12, mn);
+  const mr = r/12, mn = tenureYrs*12, mp = Math.min(atYrs*12, mn);
   if (mr === 0) return Math.max(0, P - (P/mn)*mp);
-  return Math.max(0, P * (Math.pow(1+mr,mn) - Math.pow(1+mr,mp)) / (Math.pow(1+mr,mn) - 1));
+  return Math.max(0, P * (Math.pow(1+mr,mn) - Math.pow(1+mr,mp)) / (Math.pow(1+mr,mn)-1));
 }
+
 function sipFV(monthly, r, years) {
-  const mr = r / 12, n = years * 12;
-  if (mr === 0) return monthly * n;
+  const mr = r/12, n = years*12;
+  if (mr === 0) return monthly*n;
   return monthly * (Math.pow(1+mr,n)-1)/mr*(1+mr);
 }
 
-let chartTenure = null, chartGrowth = null;
-const tenures = [5,7,10,12,15,20,25,30];
+// XIRR via Newton-Raphson
+// cashFlows: [{t: months_from_now, amount: number}]  (outflows negative, inflows positive)
+function xirr(cashflows, guess = 0.1) {
+  const MAX_ITER = 100, TOL = 1e-7;
+  let rate = guess;
+  for (let i = 0; i < MAX_ITER; i++) {
+    let f = 0, df = 0;
+    for (const cf of cashflows) {
+      const t = cf.t / 12; // years
+      const d = Math.pow(1 + rate, t);
+      f  += cf.amount / d;
+      df -= t * cf.amount / (d * (1+rate));
+    }
+    const newRate = rate - f/df;
+    if (Math.abs(newRate - rate) < TOL) return newRate;
+    rate = newRate;
+    if (rate < -0.999) rate = -0.5;
+  }
+  return rate;
+}
+
+// Plot XIRR: down payment at t=0, EMI outflows monthly, sale inflow at exit
+function calcPlotXIRR(loan, down, roi, tenure, sale, exit) {
+  const emi = calcEMI(loan, roi, tenure);
+  const exitMonths = exit * 12;
+  const flows = [];
+
+  // Initial outflow = down payment
+  flows.push({ t: 0, amount: -(down) });
+
+  // Monthly EMI outflows
+  const maxMonths = Math.min(exitMonths, tenure * 12);
+  for (let m = 1; m <= maxMonths; m++) {
+    flows.push({ t: m, amount: -emi });
+  }
+
+  // At exit: receive sale proceeds, pay off remaining loan
+  const outstandingAtExit = outstanding(loan, roi, tenure, exit);
+  flows.push({ t: exitMonths, amount: sale - outstandingAtExit });
+
+  try {
+    const rate = xirr(flows);
+    return isFinite(rate) ? rate : null;
+  } catch(e) { return null; }
+}
+
+// Real (inflation-adjusted) return
+function realReturn(nominal, inflation) {
+  return (1 + nominal) / (1 + inflation) - 1;
+}
+
+// ── State ───────────────────────────────────────────────────────────────────
+let chartTenure = null, chartGrowth = null, chartReal = null;
+const tenures = [5, 7, 10, 12, 15, 20, 25, 30];
 
 function getInputs() {
   return {
-    capacity: +document.getElementById('capacity').value,
-    loan: +document.getElementById('loan').value,
-    roi: +document.getElementById('roi').value / 100,
-    tenure: +document.getElementById('tenure').value,
-    sale: +document.getElementById('sale').value,
-    exit: +document.getElementById('exit').value,
-    sipret: +document.getElementById('sipret').value / 100,
+    capacity:  +document.getElementById('capacity').value,
+    down:      +document.getElementById('down').value,
+    loan:      +document.getElementById('loan').value,
+    roi:       +document.getElementById('roi').value / 100,
+    tenure:    +document.getElementById('tenure').value,
+    sale:      +document.getElementById('sale').value,
+    exit:      +document.getElementById('exit').value,
+    sipret:    +document.getElementById('sipret').value / 100,
+    inflation: +document.getElementById('inflation').value / 100,
   };
 }
 
+// ── Main update ─────────────────────────────────────────────────────────────
 function update() {
   const I = getInputs();
 
-  // Update labels
-  document.getElementById('v-capacity').textContent = inrFmt(I.capacity);
-  document.getElementById('v-loan').textContent = inrFmt(I.loan);
-  document.getElementById('v-roi').textContent = (I.roi*100).toFixed(2)+'%';
-  document.getElementById('v-tenure').textContent = I.tenure+' yrs';
-  document.getElementById('v-sale').textContent = inrFmt(I.sale);
-  document.getElementById('v-exit').textContent = 'Year '+I.exit;
-  document.getElementById('v-sipret').textContent = (I.sipret*100).toFixed(2)+'%';
+  // Sidebar labels
+  document.getElementById('v-capacity').textContent  = inrFmt(I.capacity);
+  document.getElementById('v-property').textContent  = inrFmt(I.loan + I.down);
+  document.getElementById('v-down').textContent      = inrFmt(I.down);
+  document.getElementById('v-loan').textContent      = inrFmt(I.loan);
+  document.getElementById('v-roi').textContent       = (I.roi*100).toFixed(2)+'%';
+  document.getElementById('v-tenure').textContent    = I.tenure+' yrs';
+  document.getElementById('v-sale').textContent      = inrFmt(I.sale);
+  document.getElementById('v-exit').textContent      = 'Year '+I.exit;
+  document.getElementById('v-sipret').textContent    = (I.sipret*100).toFixed(2)+'%';
+  document.getElementById('v-inflation').textContent = (I.inflation*100).toFixed(2)+'%';
+
+  // Core calcs
+  const emi         = calcEMI(I.loan, I.roi, I.tenure);
+  const sipAmt      = Math.max(0, I.capacity - emi);
+  const sipVal      = sipFV(sipAmt, I.sipret, I.exit);
+  const sipInv      = sipAmt * 12 * I.exit;
+  const outLoan     = outstanding(I.loan, I.roi, I.tenure, I.exit);
+  const netProfit   = I.sale - outLoan;
+  const totalWealth = netProfit + sipVal;
+  const xirrVal     = calcPlotXIRR(I.loan, I.down, I.roi, I.tenure, I.sale, I.exit);
+
+  // Sidebar derived
+  document.getElementById('v-emi-field').textContent  = inrL(emi);
+  document.getElementById('v-sip-monthly').textContent = inrL(sipAmt);
 
   // KPIs
-  const emi = calcEMI(I.loan, I.roi, I.tenure);
-  document.getElementById('v-emi-field').textContent = inrL(emi);
-  const sipAmt = Math.max(0, I.capacity - emi);
-  document.getElementById('v-sip-monthly').textContent = inrL(sipAmt);
-  const sipVal = sipFV(sipAmt, I.sipret, I.exit);
-  const sipInv = sipAmt * 12 * I.exit;
-  const outLoan = outstanding(I.loan, I.roi, I.tenure, I.exit);
-  const netProfit = I.sale - outLoan;
-  const totalWealth = netProfit + sipVal;
-  const yieldVal = totalWealth > 0 ? Math.pow(Math.max(totalWealth/I.loan, 0.0001), 1/I.exit) - 1 : 0;
-
-  document.getElementById('k-emi').textContent = inrL(emi);
-  document.getElementById('k-sipamt').textContent = 'SIP: '+inrL(sipAmt)+'/mo';
-  document.getElementById('k-sipval').textContent = inrL(sipVal);
-  document.getElementById('k-sipinv').textContent = 'Invested: '+inrL(sipInv);
+  document.getElementById('k-emi').textContent        = inrL(emi);
+  document.getElementById('k-sipamt').textContent     = 'SIP: '+inrL(sipAmt)+'/mo';
+  document.getElementById('k-sipval').textContent     = inrL(sipVal);
+  document.getElementById('k-sipinv').textContent     = 'Invested: '+inrL(sipInv);
   document.getElementById('k-outstanding').textContent = inrL(outLoan);
-  document.getElementById('k-profit').textContent = inrL(netProfit);
-  document.getElementById('k-profit').className = 'kpi-value ' + (netProfit >= 0 ? 'pos' : 'neg');
-  document.getElementById('k-wealth').textContent = inrL(totalWealth);
-  document.getElementById('k-yield').textContent = pct(yieldVal);
+  document.getElementById('k-profit').textContent     = inrL(netProfit);
+  document.getElementById('k-profit').className       = 'kpi-value ' + (netProfit >= 0 ? 'pos' : 'neg');
+  document.getElementById('k-wealth').textContent     = inrL(totalWealth);
 
-  // Insight
-  const insightEl = document.getElementById('insight-box');
-  if (emi > I.capacity) {
-    insightEl.innerHTML = `<strong>⚠ EMI exceeds capacity.</strong> Your monthly EMI of ${inrL(emi)} is higher than your capacity of ${inrL(I.capacity)}. Try reducing the loan amount or increasing tenure.`;
-  } else if (netProfit < 0) {
-    insightEl.innerHTML = `<strong>Plot sale won't cover the loan.</strong> At exit year ${I.exit}, you still owe ${inrL(outLoan)} but selling for ${inrL(I.sale)}. Your SIP of ${inrL(sipVal)} partially offsets this, giving total wealth of ${inrL(totalWealth)}.`;
+  if (xirrVal !== null) {
+    document.getElementById('k-xirr').textContent = pct(xirrVal);
+    const realX = realReturn(xirrVal, I.inflation);
+    document.getElementById('k-xirr-sub').textContent = 'Real: ' + pct(realX) + ' (after inflation)';
   } else {
-    const sipContrib = Math.round(sipVal/totalWealth*100);
-    insightEl.innerHTML = `<strong>Looking good.</strong> At exit year ${I.exit}, your plot profit is ${inrL(netProfit)} and SIP has grown to ${inrL(sipVal)} — contributing <strong>${sipContrib}%</strong> of your total wealth. Effective annual yield on investment: <strong>${pct(yieldVal)}</strong>.`;
+    document.getElementById('k-xirr').textContent = 'N/A';
+    document.getElementById('k-xirr-sub').textContent = 'annualised return on plot';
   }
 
+  // Decision Engine
+  buildDecision(I, emi, sipAmt, sipVal, netProfit, totalWealth, xirrVal);
+
+  // Insight
+  buildInsight(I, emi, sipAmt, sipVal, outLoan, netProfit, totalWealth, xirrVal);
+
+  // Charts & Tables
   buildTenureTable(I);
   buildTenureChart(I);
   buildGrowthChart(I);
+  buildRealReturns(I, emi, sipAmt, netProfit, xirrVal);
   buildScheduleTable(I);
 }
 
+// ── Decision Engine ──────────────────────────────────────────────────────────
+function buildDecision(I, emi, sipAmt, sipVal, netProfit, totalWealth, xirrVal) {
+  const banner = document.getElementById('decision-banner');
+  const icon   = document.getElementById('dec-icon');
+  const title  = document.getElementById('dec-title');
+  const sub    = document.getElementById('dec-sub');
+  const chips  = document.getElementById('dec-chips');
+
+  // Pure SIP scenario: invest (emi + sipAmt) entirely in SIP instead
+  const pureSipAmt = I.capacity;
+  const pureSipVal = sipFV(pureSipAmt, I.sipret, I.exit);
+
+  const plotTotal = totalWealth;
+  const sipTotal  = pureSipVal;
+  const diff      = plotTotal - sipTotal;
+  const realXirr  = xirrVal !== null ? realReturn(xirrVal, I.inflation) : null;
+  const realSip   = realReturn(I.sipret, I.inflation);
+
+  chips.innerHTML = '';
+
+  const addChip = (text, cls) => {
+    const c = document.createElement('span');
+    c.className = `chip ${cls}`;
+    c.textContent = text;
+    chips.appendChild(c);
+  };
+
+  if (emi > I.capacity) {
+    banner.className = 'decision-banner tied';
+    icon.textContent = '⚠';
+    title.textContent = 'EMI exceeds your monthly capacity';
+    sub.textContent = 'Reduce loan amount or increase tenure to proceed';
+    addChip('Not feasible', 'gold');
+    return;
+  }
+
+  if (diff > 0) {
+    banner.className = 'decision-banner plot-wins';
+    icon.textContent = '🏡';
+    title.textContent = `Plot investment wins by ${inrL(diff)}`;
+    sub.textContent   = `Plot total: ${inrL(plotTotal)} vs Pure SIP: ${inrL(sipTotal)}`;
+    addChip('Plot XIRR: ' + (xirrVal !== null ? pct(xirrVal) : 'N/A'), 'green');
+    addChip('SIP CAGR: ' + pct(I.sipret), 'blue');
+    if (realXirr !== null) addChip('Real plot return: ' + pct(realXirr), 'gold');
+  } else if (diff < 0) {
+    banner.className = 'decision-banner sip-wins';
+    icon.textContent = '📈';
+    title.textContent = `Pure SIP outperforms by ${inrL(Math.abs(diff))}`;
+    sub.textContent   = `SIP total: ${inrL(sipTotal)} vs Plot total: ${inrL(plotTotal)}`;
+    addChip('Plot XIRR: ' + (xirrVal !== null ? pct(xirrVal) : 'N/A'), 'green');
+    addChip('SIP CAGR: ' + pct(I.sipret), 'blue');
+    addChip('Real SIP return: ' + pct(realSip), 'gold');
+  } else {
+    banner.className = 'decision-banner tied';
+    icon.textContent = '⚖';
+    title.textContent = 'Plot and SIP are roughly equivalent';
+    sub.textContent   = 'Both paths yield similar wealth at exit';
+    addChip('Tied', 'gold');
+  }
+}
+
+// ── Insight Box ──────────────────────────────────────────────────────────────
+function buildInsight(I, emi, sipAmt, sipVal, outLoan, netProfit, totalWealth, xirrVal) {
+  const el = document.getElementById('insight-box');
+  const realXirr = xirrVal !== null ? realReturn(xirrVal, I.inflation) : null;
+  const realSip  = realReturn(I.sipret, I.inflation);
+  const sipContrib = totalWealth > 0 ? Math.round(sipVal / totalWealth * 100) : 0;
+  const pureSipVal = sipFV(I.capacity, I.sipret, I.exit);
+
+  let msg = '';
+
+  if (emi > I.capacity) {
+    msg = `<strong>⚠ EMI exceeds capacity.</strong> Your EMI of ${inrL(emi)} is more than your monthly capacity of ${inrL(I.capacity)}. 
+    Increase your tenure or reduce the loan amount.`;
+  } else if (netProfit < 0) {
+    msg = `<strong>Plot sale doesn't cover the outstanding loan.</strong> At exit year ${I.exit}, 
+    you owe ${inrL(outLoan)} but are selling for ${inrL(I.sale)}. 
+    Your SIP corpus of ${inrL(sipVal)} partially cushions this — total wealth is ${inrL(totalWealth)}.
+    Consider a higher sale price or a longer exit horizon.`;
+  } else {
+    const alpha = xirrVal !== null ? (xirrVal - I.sipret) * 100 : null;
+    msg = `<strong>Solid investment scenario.</strong> 
+    At exit year ${I.exit}, your plot profit is ${inrL(netProfit)} and SIP has compounded to ${inrL(sipVal)} 
+    (${sipContrib}% of total wealth).`;
+    if (alpha !== null) {
+      msg += ` Your plot XIRR of <strong>${pct(xirrVal)}</strong> is 
+      ${alpha >= 0 ? '<strong style="color:var(--green)">' + alpha.toFixed(1) + '% above</strong>' : '<strong style="color:var(--red)">' + Math.abs(alpha).toFixed(1) + '% below</strong>'} 
+      the SIP return.`;
+    }
+  }
+
+  // Insight pills
+  const pills = [
+    { label: 'Real Plot Return', value: realXirr !== null ? pct(realXirr) : 'N/A', bad: realXirr !== null && realXirr < 0 },
+    { label: 'Real SIP Return',  value: pct(realSip), bad: realSip < 0 },
+    { label: 'Pure SIP at Exit', value: inrL(pureSipVal), bad: false },
+    { label: 'Plot vs Pure SIP', value: inrL(totalWealth - pureSipVal), bad: totalWealth < pureSipVal },
+  ];
+
+  const pillsHTML = pills.map(p =>
+    `<div class="insight-pill"><span>${p.label}</span><strong style="color:${p.bad ? 'var(--red)' : 'var(--green)'}">${p.value}</strong></div>`
+  ).join('');
+
+  el.innerHTML = msg + `<div class="insight-grid">${pillsHTML}</div>`;
+}
+
+// ── Tenure Table ─────────────────────────────────────────────────────────────
 function buildTenureTable(I) {
   const rows = tenures.map(t => {
-    const emi = calcEMI(I.loan, I.roi, t);
+    const emi    = calcEMI(I.loan, I.roi, t);
     const sipAmt = Math.max(0, I.capacity - emi);
     const sipVal = sipFV(sipAmt, I.sipret, I.exit);
-    const out = outstanding(I.loan, I.roi, t, I.exit);
+    const out    = outstanding(I.loan, I.roi, t, I.exit);
     const profit = I.sale - out;
     const wealth = profit + sipVal;
-    const yld = wealth > 0 ? Math.pow(Math.max(wealth/I.loan,0.0001),1/I.exit)-1 : 0;
-    return { t, emi, sipAmt, sipVal, out, profit, wealth, yld, feasible: emi <= I.capacity };
+    const xv     = calcPlotXIRR(I.loan, I.down, I.roi, t, I.sale, I.exit);
+    return { t, emi, sipAmt, sipVal, out, profit, wealth, xv, feasible: emi <= I.capacity };
   });
 
   const feasible = rows.filter(r => r.feasible);
@@ -569,10 +658,10 @@ function buildTenureTable(I) {
   const tbody = document.getElementById('tenure-table');
   tbody.innerHTML = '';
   rows.forEach(r => {
-    const isBest = best && r.t === best.t;
+    const isBest    = best && r.t === best.t;
     const isCurrent = r.t === I.tenure;
     const tr = document.createElement('tr');
-    if (isBest) tr.className = 'best-row';
+    if (isBest)      tr.className = 'best-row';
     if (!r.feasible) tr.className = 'faded';
     tr.innerHTML = `
       <td>${r.t} yr${isBest ? '<span class="best-badge">BEST</span>' : ''}${isCurrent && !isBest ? ' ●' : ''}</td>
@@ -582,45 +671,40 @@ function buildTenureTable(I) {
       <td>${inrL(r.out)}</td>
       <td class="${r.profit>=0?'pos':'neg'}">${inrL(r.profit)}</td>
       <td style="font-weight:600">${r.feasible ? inrL(r.wealth) : '—'}</td>
-      <td>${r.feasible ? pct(r.yld) : '—'}</td>
+      <td>${r.feasible && r.xv !== null ? pct(r.xv) : '—'}</td>
     `;
     tbody.appendChild(tr);
   });
 }
 
+// ── Tenure Chart ─────────────────────────────────────────────────────────────
 function buildTenureChart(I) {
   const rows = tenures.map(t => {
-    const emi = calcEMI(I.loan, I.roi, t);
+    const emi    = calcEMI(I.loan, I.roi, t);
     const sipAmt = Math.max(0, I.capacity - emi);
     const sipVal = sipFV(sipAmt, I.sipret, I.exit);
-    const out = outstanding(I.loan, I.roi, t, I.exit);
+    const out    = outstanding(I.loan, I.roi, t, I.exit);
     const profit = I.sale - out;
     const wealth = profit + sipVal;
     return { t, profit, sipVal, wealth, feasible: emi <= I.capacity };
   });
 
-  const labels = rows.map(r => r.t+'yr');
-  const profits = rows.map(r => r.feasible ? Math.round(r.profit/100000) : null);
-  const sipVals = rows.map(r => r.feasible ? Math.round(r.sipVal/100000) : null);
-  const wealths = rows.map(r => r.feasible ? Math.round(r.wealth/100000) : null);
-
   if (chartTenure) chartTenure.destroy();
   chartTenure = new Chart(document.getElementById('chart-tenure'), {
     type: 'bar',
     data: {
-      labels,
+      labels: rows.map(r => r.t+'yr'),
       datasets: [
-        { label: 'Net Plot Profit', data: profits, backgroundColor: '#378ADD', borderRadius: 4 },
-        { label: 'SIP Value', data: sipVals, backgroundColor: '#5DCAA5', borderRadius: 4 },
-        { label: 'Total Wealth', data: wealths, type: 'line', borderColor: '#C4922A', backgroundColor: 'transparent', pointBackgroundColor: '#C4922A', pointRadius: 5, tension: 0.4 }
+        { label: 'Net Plot Profit', data: rows.map(r => r.feasible ? Math.round(r.profit/100000) : null), backgroundColor: '#378ADD', borderRadius: 4 },
+        { label: 'SIP Value',       data: rows.map(r => r.feasible ? Math.round(r.sipVal/100000) : null),  backgroundColor: '#5DCAA5', borderRadius: 4 },
+        { label: 'Total Wealth',    data: rows.map(r => r.feasible ? Math.round(r.wealth/100000) : null),
+          type: 'line', borderColor: '#C4922A', backgroundColor: 'transparent',
+          pointBackgroundColor: '#C4922A', pointRadius: 5, tension: 0.4 }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => ' ₹' + ctx.raw + 'L' } }
-      },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ₹'+ctx.raw+'L' } } },
       scales: {
         x: { ticks: { autoSkip: false, color: '#5C4F38', font: { family: 'DM Mono', size: 11 } }, grid: { display: false } },
         y: { ticks: { callback: v => '₹'+v+'L', color: '#9B8E78', font: { family: 'DM Mono', size: 10 } }, grid: { color: 'rgba(90,70,40,0.08)' } }
@@ -629,17 +713,11 @@ function buildTenureChart(I) {
   });
 }
 
+// ── Growth Chart ─────────────────────────────────────────────────────────────
 function buildGrowthChart(I) {
-  const emi = calcEMI(I.loan, I.roi, I.tenure);
+  const emi    = calcEMI(I.loan, I.roi, I.tenure);
   const sipAmt = Math.max(0, I.capacity - emi);
-  const years = Array.from({length: 30}, (_,i) => i+1);
-  const sipSeries = years.map(y => Math.round(sipFV(sipAmt, I.sipret, y)/100000));
-  const outSeries = years.map(y => Math.round(outstanding(I.loan, I.roi, I.tenure, y)/100000));
-  const wealthSeries = years.map(y => {
-    const sip = sipFV(sipAmt, I.sipret, y);
-    const out = outstanding(I.loan, I.roi, I.tenure, y);
-    return Math.round((I.sale - out + sip)/100000);
-  });
+  const years  = Array.from({length: 30}, (_,i) => i+1);
 
   if (chartGrowth) chartGrowth.destroy();
   chartGrowth = new Chart(document.getElementById('chart-growth'), {
@@ -647,17 +725,20 @@ function buildGrowthChart(I) {
     data: {
       labels: years.map(y => 'Yr '+y),
       datasets: [
-        { label: 'SIP Value', data: sipSeries, borderColor: '#5DCAA5', backgroundColor: 'rgba(93,202,165,0.1)', fill: true, tension: 0.4, pointRadius: 2 },
-        { label: 'Outstanding Loan', data: outSeries, borderColor: '#9B2335', backgroundColor: 'rgba(155,35,53,0.05)', fill: true, tension: 0.2, pointRadius: 2 },
-        { label: 'Total Wealth (incl. plot sale)', data: wealthSeries, borderColor: '#C4922A', backgroundColor: 'transparent', tension: 0.4, pointRadius: 2, borderWidth: 2.5 }
+        { label: 'SIP Value', data: years.map(y => Math.round(sipFV(sipAmt, I.sipret, y)/100000)),
+          borderColor: '#5DCAA5', backgroundColor: 'rgba(93,202,165,0.1)', fill: true, tension: 0.4, pointRadius: 2 },
+        { label: 'Outstanding Loan', data: years.map(y => Math.round(outstanding(I.loan, I.roi, I.tenure, y)/100000)),
+          borderColor: '#9B2335', backgroundColor: 'rgba(155,35,53,0.05)', fill: true, tension: 0.2, pointRadius: 2 },
+        { label: 'Total Wealth (plot + SIP)',
+          data: years.map(y => Math.round((I.sale - outstanding(I.loan, I.roi, I.tenure, y) + sipFV(sipAmt, I.sipret, y))/100000)),
+          borderColor: '#C4922A', backgroundColor: 'transparent', tension: 0.4, pointRadius: 2, borderWidth: 2.5 }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: { position: 'top', labels: { usePointStyle: true, font: { family: 'DM Mono', size: 11 }, color: '#5C4F38', padding: 16 } },
-        tooltip: { callbacks: { label: ctx => ' '+ctx.dataset.label+': ₹'+ctx.raw+'L' } },
-        annotation: {}
+        tooltip: { callbacks: { label: ctx => ' '+ctx.dataset.label+': ₹'+ctx.raw+'L' } }
       },
       scales: {
         x: { ticks: { autoSkip: true, maxTicksLimit: 10, color: '#9B8E78', font: { family: 'DM Mono', size: 10 } }, grid: { display: false } },
@@ -667,20 +748,126 @@ function buildGrowthChart(I) {
   });
 }
 
+// ── Real Returns Tab ──────────────────────────────────────────────────────────
+function buildRealReturns(I, emi, sipAmt, netProfit, xirrVal) {
+  const inf       = I.inflation;
+  const realSip   = realReturn(I.sipret, inf);
+  const realLoan  = realReturn(I.roi, inf);       // real cost of borrowing
+  const realXirr  = xirrVal !== null ? realReturn(xirrVal, inf) : null;
+
+  // Plot CAGR (simple: based on sale vs loan+down)
+  const totalInvested = I.loan + I.down;
+  const plotCAGR = totalInvested > 0 ? Math.pow(I.sale / totalInvested, 1/I.exit) - 1 : 0;
+  const realPlotCAGR = realReturn(plotCAGR, inf);
+
+  // SIP real FV
+  const nominalSipFV = sipFV(sipAmt, I.sipret, I.exit);
+  // Real FV: discount by inflation
+  const realSipFV = nominalSipFV / Math.pow(1 + inf, I.exit);
+  const realNetProfit = netProfit / Math.pow(1 + inf, I.exit);
+
+  // Cards
+  const grid = document.getElementById('rr-grid');
+  grid.innerHTML = [
+    {
+      label: 'Plot XIRR',
+      nominal: xirrVal !== null ? pct(xirrVal) : 'N/A',
+      real: realXirr !== null ? pct(realXirr) : 'N/A',
+      realBad: realXirr !== null && realXirr < 0,
+      note: 'After down pmt + EMIs'
+    },
+    {
+      label: 'SIP Returns (CAGR)',
+      nominal: pct(I.sipret),
+      real: pct(realSip),
+      realBad: realSip < 0,
+      note: 'Assumed constant return'
+    },
+    {
+      label: 'Cost of Loan (ROI)',
+      nominal: pct(I.roi),
+      real: pct(realLoan),
+      realBad: false,
+      note: 'Real borrowing cost'
+    },
+    {
+      label: 'Plot Appreciation',
+      nominal: pct(plotCAGR),
+      real: pct(realPlotCAGR),
+      realBad: realPlotCAGR < 0,
+      note: `Sale ÷ Total cost ^ (1/${I.exit})`
+    },
+    {
+      label: 'SIP Corpus (real)',
+      nominal: inrL(nominalSipFV),
+      real: inrL(Math.round(realSipFV)),
+      realBad: false,
+      note: 'In today\'s ₹ purchasing power'
+    },
+    {
+      label: 'Net Plot Profit (real)',
+      nominal: inrL(netProfit),
+      real: inrL(Math.round(realNetProfit)),
+      realBad: realNetProfit < 0,
+      note: 'In today\'s ₹ purchasing power'
+    },
+  ].map(c => `
+    <div class="rr-card">
+      <div class="rr-label">${c.label}</div>
+      <div class="rr-nominal">${c.nominal}</div>
+      <div class="rr-real ${c.realBad ? 'bad' : ''}">Real: ${c.real}</div>
+      <div class="rr-note">${c.note}</div>
+    </div>
+  `).join('');
+
+  // Real returns comparison chart
+  const years = Array.from({length: Math.min(I.exit, 30)}, (_,i) => i+1);
+  const nomSipSeries  = years.map(y => Math.round(sipFV(sipAmt, I.sipret, y)/100000));
+  const realSipSeries = years.map(y => Math.round(sipFV(sipAmt, I.sipret, y) / Math.pow(1+inf, y) / 100000));
+  const nomWealthSeries  = years.map(y => Math.round((I.sale - outstanding(I.loan, I.roi, I.tenure, y) + sipFV(sipAmt, I.sipret, y))/100000));
+  const realWealthSeries = years.map(y => Math.round((I.sale - outstanding(I.loan, I.roi, I.tenure, y) + sipFV(sipAmt, I.sipret, y)) / Math.pow(1+inf, y) / 100000));
+
+  if (chartReal) chartReal.destroy();
+  chartReal = new Chart(document.getElementById('chart-real'), {
+    type: 'line',
+    data: {
+      labels: years.map(y => 'Yr '+y),
+      datasets: [
+        { label: 'Total Wealth (nominal)', data: nomWealthSeries,  borderColor: '#C4922A', tension: 0.4, pointRadius: 2, borderWidth: 2 },
+        { label: 'Total Wealth (real)',    data: realWealthSeries, borderColor: '#EF9F27', borderDash: [5,4], tension: 0.4, pointRadius: 2, borderWidth: 2 },
+        { label: 'SIP (nominal)',          data: nomSipSeries,     borderColor: '#5DCAA5', tension: 0.4, pointRadius: 2, borderWidth: 1.5 },
+        { label: 'SIP (real)',             data: realSipSeries,    borderColor: '#1D9E75', borderDash: [5,4], tension: 0.4, pointRadius: 2, borderWidth: 1.5 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { usePointStyle: true, font: { family: 'DM Mono', size: 10 }, color: '#5C4F38', padding: 12 } },
+        tooltip: { callbacks: { label: ctx => ' '+ctx.dataset.label+': ₹'+ctx.raw+'L' } }
+      },
+      scales: {
+        x: { ticks: { autoSkip: true, maxTicksLimit: 10, color: '#9B8E78', font: { family: 'DM Mono', size: 10 } }, grid: { display: false } },
+        y: { ticks: { callback: v => '₹'+v+'L', color: '#9B8E78', font: { family: 'DM Mono', size: 10 } }, grid: { color: 'rgba(90,70,40,0.08)' } }
+      }
+    }
+  });
+}
+
+// ── Schedule Table ────────────────────────────────────────────────────────────
 function buildScheduleTable(I) {
-  const emi = calcEMI(I.loan, I.roi, I.tenure);
+  const emi    = calcEMI(I.loan, I.roi, I.tenure);
   const sipAmt = Math.max(0, I.capacity - emi);
-  const tbody = document.getElementById('schedule-table');
+  const tbody  = document.getElementById('schedule-table');
   tbody.innerHTML = '';
 
   for (let yr = 1; yr <= 30; yr++) {
-    const prevOut = yr === 1 ? I.loan : outstanding(I.loan, I.roi, I.tenure, yr-1);
-    const curOut = outstanding(I.loan, I.roi, I.tenure, yr);
+    const prevOut  = yr === 1 ? I.loan : outstanding(I.loan, I.roi, I.tenure, yr-1);
+    const curOut   = outstanding(I.loan, I.roi, I.tenure, yr);
     const annualEmi = emi * 12;
     const principal = prevOut - curOut;
-    const interest = annualEmi - principal;
-    const sipInv = sipAmt * 12 * yr;
-    const sipValue = sipFV(sipAmt, I.sipret, yr);
+    const interest  = annualEmi - principal;
+    const sipInv    = sipAmt * 12 * yr;
+    const sipValue  = sipFV(sipAmt, I.sipret, yr);
     const netWealth = sipValue - curOut;
 
     const tr = document.createElement('tr');
@@ -699,16 +886,17 @@ function buildScheduleTable(I) {
   }
 }
 
-function switchTab(tab) {
+// ── Tab switcher ──────────────────────────────────────────────────────────────
+function switchTab(tab, btn) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
-  event.target.classList.add('active');
-  if (tab === 'growth') {
-    setTimeout(() => { if (chartGrowth) chartGrowth.resize(); }, 50);
-  }
+  btn.classList.add('active');
+  if (tab === 'growth') setTimeout(() => { if (chartGrowth) chartGrowth.resize(); }, 50);
+  if (tab === 'real')   setTimeout(() => { if (chartReal)   chartReal.resize(); }, 50);
 }
 
+// ── Boot ──────────────────────────────────────────────────────────────────────
 document.querySelectorAll('input[type=range]').forEach(el => el.addEventListener('input', update));
 update();
 </script>
