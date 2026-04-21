@@ -208,20 +208,20 @@
         <label>Property Cost <span class="val" id="v-property">—</span></label>
       </div>
       <div class="field">
-        <label>Down Payment <span class="val" id="v-down">₹5,00,000</span></label>
-        <input type="range" id="down" min="0" max="20000000" step="100000" value="500000">
+        <label>Down Payment <span class="val" id="v-down">₹14,00,000</span></label>
+        <input type="range" id="down" min="0" max="20000000" step="100000" value="1400000">
       </div>
       <div class="field">
-        <label>Loan Amount <span class="val" id="v-loan">₹30,00,000</span></label>
-        <input type="range" id="loan" min="0" max="50000000" step="100000" value="3000000">
+        <label>Loan Amount <span class="val" id="v-loan">₹28,00,000</span></label>
+        <input type="range" id="loan" min="0" max="50000000" step="100000" value="2800000">
       </div>
       <div class="field">
         <label>Annual Interest Rate <span class="val" id="v-roi">8.50%</span></label>
         <input type="range" id="roi" min="6" max="15" step="0.25" value="8.5">
       </div>
       <div class="field">
-        <label>Loan Tenure <span class="val" id="v-tenure">20 yrs</span></label>
-        <input type="range" id="tenure" min="5" max="50" step="1" value="20">
+        <label>Loan Tenure <span class="val" id="v-tenure">30 yrs</span></label>
+        <input type="range" id="tenure" min="5" max="50" step="1" value="30">
       </div>
       <div class="field">
         <label>Est. Monthly EMI <span class="val" id="v-emi-field">—</span></label>
@@ -231,12 +231,12 @@
     <div class="sidebar-section">
       <div class="sidebar-section-title">Plot Sale</div>
       <div class="field">
-        <label>Sale Amount <span class="val" id="v-sale">₹70,00,000</span></label>
-        <input type="range" id="sale" min="0" max="100000000" step="500000" value="7000000">
+        <label>Sale Amount <span class="val" id="v-sale">₹1,00,00,000</span></label>
+        <input type="range" id="sale" min="0" max="100000000" step="500000" value="10000000">
       </div>
       <div class="field">
-        <label>Exit Year <span class="val" id="v-exit">Year 10</span></label>
-        <input type="range" id="exit" min="1" max="50" step="1" value="10">
+        <label>Exit Year <span class="val" id="v-exit">Year 5</span></label>
+        <input type="range" id="exit" min="1" max="50" step="1" value="5">
       </div>
     </div>
 
@@ -275,6 +275,11 @@
         <div class="kpi-sub" id="k-sipinv">Invested: —</div>
       </div>
       <div class="kpi">
+        <div class="kpi-label">EMI Paid Until Exit Year</div>
+        <div class="kpi-value" id="k-emi-paid">—</div>
+        <div class="kpi-sub">Total EMI paid up to exit year</div>
+      </div>
+      <div class="kpi">
         <div class="kpi-label">Outstanding Loan</div>
         <div class="kpi-value" id="k-outstanding">—</div>
         <div class="kpi-sub">at exit year</div>
@@ -282,7 +287,7 @@
       <div class="kpi green-kpi">
         <div class="kpi-label">Net Plot Profit</div>
         <div class="kpi-value" id="k-profit">—</div>
-        <div class="kpi-sub">Sale − Outstanding Loan</div>
+        <div class="kpi-sub">Sale amount - [LTCG(12.5%) + Brokerage(2%) + Legal(0.3%) + TDS(1%) + Down payment + EMI paid till date + Outstanding Loan]</div>
       </div>
       <div class="kpi green-kpi">
         <div class="kpi-label">Total Wealth at Exit</div>
@@ -491,7 +496,15 @@ function update() {
   const sipVal      = sipFV(sipAmt, I.sipret, I.exit);
   const sipInv      = sipAmt * 12 * I.exit;
   const outLoan     = outstanding(I.loan, I.roi, I.tenure, I.exit);
-  const netProfit   = I.sale - outLoan;
+
+  // Calculate deductions
+  const ltcg      = I.sale * 0.125;
+  const brokerage = I.sale * 0.02;
+  const legal     = I.sale * 0.003;
+  const tds       = I.sale * 0.01;
+  const emiPaid   = emi * 12 * Math.min(I.exit, I.tenure);
+  const netProfit = I.sale - (ltcg + brokerage + legal + tds + I.down + emiPaid + outLoan);
+
   const totalWealth = netProfit + sipVal;
   const xirrVal     = calcPlotXIRR(I.loan, I.down, I.roi, I.tenure, I.sale, I.exit);
 
@@ -504,6 +517,7 @@ function update() {
   document.getElementById('k-sipamt').textContent     = 'SIP: '+inrL(sipAmt)+'/mo';
   document.getElementById('k-sipval').textContent     = inrL(sipVal);
   document.getElementById('k-sipinv').textContent     = 'Invested: '+inrL(sipInv);
+  document.getElementById('k-emi-paid').textContent   = inrL(emiPaid);
   document.getElementById('k-outstanding').textContent = inrL(outLoan);
   document.getElementById('k-profit').textContent     = inrL(netProfit);
   document.getElementById('k-profit').className       = 'kpi-value ' + (netProfit >= 0 ? 'pos' : 'neg');
