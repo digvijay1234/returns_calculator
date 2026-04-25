@@ -318,9 +318,6 @@
       <div class="decision-chips" id="dec-chips"></div>
     </div>
 
-    <!-- Insight -->
-    <div id="insight-box" class="insight"></div>
-
     <!-- Tabs -->
     <div class="tabs">
       <button class="tab active" onclick="switchTab('tenure', this)">Tenure Analysis</button>
@@ -544,9 +541,6 @@ function update() {
 
   // Decision Engine
   buildDecision(I, emi, sipAmt, sipVal, netProfit, totalWealth, xirrVal);
-
-  // Insight
-  buildInsight(I, emi, sipAmt, sipVal, outLoan, netProfit, totalWealth, xirrVal);
 
   // Charts & Tables
   buildTenureTable(I);
