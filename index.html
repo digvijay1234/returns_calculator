@@ -290,9 +290,14 @@
         <div class="kpi-sub">Sale amount - [LTCG(12.5%) + Brokerage(2%) + Legal(0.3%) + TDS(1%) + Down payment + EMI paid till date + Outstanding Loan]</div>
       </div>
       <div class="kpi green-kpi">
-        <div class="kpi-label">Total Wealth at Exit</div>
+        <div class="kpi-label">Total Wealth with Hybrid (Plot and SIP)</div>
         <div class="kpi-value" id="k-wealth">—</div>
-        <div class="kpi-sub">Plot Profit + SIP</div>
+        <div class="kpi-sub">Sale amount + SIP</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Total Wealth (Pure SIP)</div>
+        <div class="kpi-value" id="k-lump-sip">—</div>
+        <div class="kpi-sub">Downpayment as lump sum, capacity as SIP</div>
       </div>
       <div class="kpi blue-kpi">
         <div class="kpi-label">Plot XIRR</div>
@@ -503,9 +508,13 @@ function update() {
   const legal     = I.sale * 0.003;
   const tds       = I.sale * 0.01;
   const emiPaid   = emi * 12 * Math.min(I.exit, I.tenure);
-  const netProfit = I.sale - (ltcg + brokerage + legal + tds + I.down + emiPaid + outLoan);
+  const netProfit = I.sale - (ltcg + brokerage + legal + tds + emiPaid + outLoan + I.down);
 
-  const totalWealth = netProfit + sipVal;
+  const lumpDownFV = I.down * Math.pow(1 + I.sipret, I.exit);
+  const capacitySipFV = sipFV(I.capacity, I.sipret, I.exit);
+  const lumpPlusCapacitySip = lumpDownFV + capacitySipFV;
+
+  const totalWealth = I.sale + sipVal;
   const xirrVal     = calcPlotXIRR(I.loan, I.down, I.roi, I.tenure, I.sale, I.exit);
 
   // Sidebar derived
@@ -518,6 +527,7 @@ function update() {
   document.getElementById('k-sipval').textContent     = inrL(sipVal);
   document.getElementById('k-sipinv').textContent     = 'Invested: '+inrL(sipInv);
   document.getElementById('k-emi-paid').textContent   = inrL(emiPaid);
+  document.getElementById('k-lump-sip').textContent  = inrL(lumpPlusCapacitySip);
   document.getElementById('k-outstanding').textContent = inrL(outLoan);
   document.getElementById('k-profit').textContent     = inrL(netProfit);
   document.getElementById('k-profit').className       = 'kpi-value ' + (netProfit >= 0 ? 'pos' : 'neg');
@@ -554,13 +564,17 @@ function buildDecision(I, emi, sipAmt, sipVal, netProfit, totalWealth, xirrVal) 
   const sub    = document.getElementById('dec-sub');
   const chips  = document.getElementById('dec-chips');
 
-  // Pure SIP scenario: invest (emi + sipAmt) entirely in SIP instead
-  const pureSipAmt = I.capacity;
-  const pureSipVal = sipFV(pureSipAmt, I.sipret, I.exit);
+  // ── CORRECTED Pure SIP scenario ──────────────────────────────────────────
+  // If user had NOT bought the plot, they would have:
+  // 1. Invested the down payment as a lump sum at t=0
+  // 2. Invested full monthly capacity (no EMI deduction) as monthly SIP
+  const lumpSumFV  = I.down * Math.pow(1 + I.sipret, I.exit);   // ₹14L grown
+  const pureSipFV  = sipFV(I.capacity, I.sipret, I.exit);        // ₹80K/mo SIP
+  const pureSipTotal = lumpSumFV + pureSipFV;
+  // ─────────────────────────────────────────────────────────────────────────
 
-  const plotTotal = totalWealth;
-  const sipTotal  = pureSipVal;
-  const diff      = plotTotal - sipTotal;
+  const plotTotal = totalWealth;  // Sale amount + SIP (as defined by user)
+  const diff      = plotTotal - pureSipTotal;
   const realXirr  = xirrVal !== null ? realReturn(xirrVal, I.inflation) : null;
   const realSip   = realReturn(I.sipret, I.inflation);
 
@@ -586,7 +600,7 @@ function buildDecision(I, emi, sipAmt, sipVal, netProfit, totalWealth, xirrVal) 
     banner.className = 'decision-banner plot-wins';
     icon.textContent = '🏡';
     title.textContent = `Plot investment wins by ${inrL(diff)}`;
-    sub.textContent   = `Plot total: ${inrL(plotTotal)} vs Pure SIP: ${inrL(sipTotal)}`;
+    sub.textContent   = `Plot total: ${inrL(plotTotal)} vs Pure SIP: ${inrL(pureSipTotal)}`;
     addChip('Plot XIRR: ' + (xirrVal !== null ? pct(xirrVal) : 'N/A'), 'green');
     addChip('SIP CAGR: ' + pct(I.sipret), 'blue');
     if (realXirr !== null) addChip('Real plot return: ' + pct(realXirr), 'gold');
@@ -594,7 +608,7 @@ function buildDecision(I, emi, sipAmt, sipVal, netProfit, totalWealth, xirrVal) 
     banner.className = 'decision-banner sip-wins';
     icon.textContent = '📈';
     title.textContent = `Pure SIP outperforms by ${inrL(Math.abs(diff))}`;
-    sub.textContent   = `SIP total: ${inrL(sipTotal)} vs Plot total: ${inrL(plotTotal)}`;
+    sub.textContent   = `SIP total: ${inrL(pureSipTotal)} vs Plot total: ${inrL(plotTotal)}`;
     addChip('Plot XIRR: ' + (xirrVal !== null ? pct(xirrVal) : 'N/A'), 'green');
     addChip('SIP CAGR: ' + pct(I.sipret), 'blue');
     addChip('Real SIP return: ' + pct(realSip), 'gold');
